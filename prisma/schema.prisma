@@ -1,0 +1,17 @@
+generator kysely {
+  provider     = "prisma-kysely"
+  output       = "../src/core/db"
+  fileName     = "db.types.ts"
+  enumFileName = "db.enums.ts"
+}
+
+datasource db {
+  provider     = "sqlite"
+  url          = env("PRISMA_DB_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  email String
+}
