@@ -1,0 +1,80 @@
+services:
+  db-master:
+    image: mysql:8.0.28
+    container_name: 'db-master'
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 5s
+      timeout: 10s
+      retries: 20
+    restart: unless-stopped
+    ports:
+      - $DB_MASTER_PORT:3306
+    volumes:
+      - ./config/db/master/mysql.cfg:/etc/my.cnf
+      - ./config/db/master/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - mysql-master-data:/var/lib/mysql
+    command: ['mysqld', '--binlog_do_db=$DB_MASTER_NAME']
+    environment:
+      - MYSQL_ROOT_PASSWORD=$DB_MASTER_PWD
+      - MYSQL_DATABASE=$DB_MASTER_NAME
+      - DB_MASTER_USER=$DB_MASTER_USER
+      - DB_MASTER_PWD=$DB_MASTER_PWD
+    networks:
+      - dev-server
+    cap_add:
+      - SYS_NICE
+
+  db-slave:
+    image: mysql:8.0.28
+    container_name: 'db-slave'
+    restart: unless-stopped
+    depends_on:
+      db-master:
+        condition: service_healthy
+    ports:
+      - $DB_SLAVE_PORT:3306
+    volumes:
+      - ./config/db/slave/mysql.cfg:/etc/my.cnf
+      - ./config/db/slave/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - mysql-slave-data:/var/lib/mysql
+    command: ['mysqld', '--binlog_do_db=$DB_SLAVE_NAME']
+    environment:
+      - MYSQL_ROOT_PASSWORD=$DB_SLAVE_PWD
+      - MYSQL_DATABASE=$DB_SLAVE_NAME
+      - MASTER_HOST=db-master
+      - DB_MASTER_USER=$DB_MASTER_USER
+      - DB_MASTER_PWD=$DB_MASTER_PWD
+    networks:
+      - dev-server
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 5s
+      timeout: 10s
+      retries: 20
+    cap_add:
+      - SYS_NICE
+
+  dev-server-api:
+    image: dev-server-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db-master:
+        condition: service_healthy
+      db-slave:
+        condition: service_healthy
+    env_file:
+      - .env
+    ports:
+      - $APP_PORT:$APP_PORT
+    networks:
+      - dev-server
+
+networks:
+  dev-server:
+
+volumes:
+  mysql-master-data:
+  mysql-slave-data:

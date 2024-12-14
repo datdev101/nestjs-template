@@ -1,16 +1,16 @@
 import { NestFactory } from '@nestjs/core';
+import { applyAppConfig, initSwagger, setAppPrefix } from './app.helper';
 import { AppModule } from './app.module';
-import { initSwagger, setAppPrefix } from './app.setup';
 import { AppConfigService } from './core/app-config/app-config.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const appConfig = app.get(AppConfigService);
 
-  setAppPrefix(app, appConfig.app.prefix);
-  await initSwagger(app, appConfig.app.prefix);
+  applyAppConfig(app);
+  setAppPrefix(app);
+  initSwagger(app);
 
   await app.listen(appConfig.app.port);
 }
-
 bootstrap();

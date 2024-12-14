@@ -8,12 +8,9 @@ module.exports = {
   },
   plugins: ['@typescript-eslint/eslint-plugin', '@darraghor/nestjs-typed'],
   extends: [
-    'plugin:import/recommended',
-    'plugin:import/typescript',
-    'plugin:@darraghor/nestjs-typed/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
-    'plugin:oxlint/recommended',
+    'plugin:@darraghor/nestjs-typed/recommended',
   ],
   root: true,
   env: {
@@ -21,15 +18,15 @@ module.exports = {
     jest: true,
     es6: true,
   },
-  ignorePatterns: ['.eslintrc.js'],
+  ignorePatterns: [
+    '.eslintrc.js',
+    'node_modules',
+    'dist',
+    'coverage',
+    'jest.config.js',
+    'commitlint.config.js',
+  ],
   rules: {
-    'import/no-unresolved': [
-      0,
-      {
-        commonjs: true,
-        amd: true,
-      },
-    ],
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -45,6 +42,13 @@ module.exports = {
         destructuredArrayIgnorePattern: '^_',
         varsIgnorePattern: '^_',
         ignoreRestSiblings: true,
+      },
+    ],
+    'import/no-unresolved': [
+      0,
+      {
+        commonjs: true,
+        amd: true,
       },
     ],
   },

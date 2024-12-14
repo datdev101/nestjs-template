@@ -1,7 +1,7 @@
 export enum Environment {
-  Local = 'local',
-  Test = 'test',
-  Dev = 'dev',
-  Qa = 'qa',
-  Live = 'live',
+  LOCAL = 'local',
+  TEST = 'test',
+  DEV = 'dev',
+  QA = 'qa',
+  LIVE = 'live',
 }

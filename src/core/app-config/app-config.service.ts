@@ -21,9 +21,23 @@ export class AppConfigService {
     };
   }
 
+  get swagger() {
+    return {
+      path: join(this.app.prefix, 'docs'),
+      title: 'Dev Server',
+      description: 'Dev Server API description',
+      version: '1.0',
+    };
+  }
+
   get db() {
     return {
-      url: join(process.cwd(), this.getKey('DB_URL')),
+      master: {
+        url: this.getKey('DB_MASTER_URL'),
+      },
+      slave: {
+        url: this.getKey('DB_SLAVE_URL'),
+      },
     };
   }
 }

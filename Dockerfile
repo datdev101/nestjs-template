@@ -1,4 +1,4 @@
-FROM node:18.18-alpine AS base
+FROM node:20-slim AS base
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN yarn install --prod --frozen-lockfile --ignore-scripts \
   && cp -RL node_modules/ /tmp/node_modules
 
 ### BUILDER APP ###
-FROM base as builder
+FROM base AS builder
 WORKDIR /app
 
 COPY package.json yarn.lock ./
@@ -25,11 +25,11 @@ RUN yarn build
 ### RUNNER ###
 FROM base
 
-RUN apk update && apk upgrade
+RUN apt-get update -y && apt-get upgrade -y 
+RUN apt-get install -y openssl
 
 # Copy runtime dependencies
 COPY --from=builder-production /tmp/node_modules/ ./node_modules
-
 # Copy runtime project
 COPY --from=builder /app/dist ./src
 

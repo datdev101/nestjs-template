@@ -22,7 +22,10 @@ export class EnvironmentVariables {
   APP_PREFIX: string;
 
   @IsString()
-  DB_URL: string;
+  DB_MASTER_URL: string;
+
+  @IsString()
+  DB_SLAVE_URL: string;
 }
 
 export function validate(config: Record<string, unknown>) {
